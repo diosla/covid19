@@ -6,11 +6,23 @@ This is a temporary script file.
 """
 
 import pandas as pd
+import pycountry
 
-url = 'https://covid.ourworldindata.org/data/owid-covid-data.csv'
 
-data = pd.read_csv(url, parse_dates=['date'], index_col=['iso_code', 'date'])
-data.sort_index(axis='index', level=[0, 1], inplace=True)
-h_plot = data.loc['COL'].new_deaths.plot()
+def downloaddb(url=None):
+    if url is None:
+        url = 'https://covid.ourworldindata.org/data/owid-covid-data.csv'
+    data = pd.read_csv(url, parse_dates=['date'],
+                       index_col=['iso_code', 'date'])
+    return data
 
- 
+
+def country(dataframe, name='COL'):
+    iso_code = pycountry.countries.lookup(name).alpha_3
+    return dataframe.loc[iso_code]
+
+
+if __name__ == '__main__':
+    db = downloaddb()
+    selected_country = country(db, 'COL')
+    selected_country.total_cases.plot()
