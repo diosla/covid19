@@ -17,12 +17,26 @@ def downloaddb(url=None):
     return data
 
 
-def country(dataframe, name='COL'):
+def country(database_complete, name='COL'):
     iso_code = pycountry.countries.lookup(name).alpha_3
-    return dataframe.loc[iso_code]
+    return database_complete.loc[iso_code]
+
+
+def plot(database, *args, **kwargs):
+    if len(args) == 1:
+        plot_handler = database.loc[:, args[0]].plot(**kwargs)
+    elif len(args) == 2:
+        plot_handler = database.plot(x=args[0], y=args[1], **kwargs)
+    else:
+        error_message = (
+            f'plot() takes either 1 or 2 arguments after'
+            f' the database ({len(args)} given)'
+        )
+        raise TypeError(error_message)
+    return plot_handler
 
 
 if __name__ == '__main__':
     db = downloaddb()
     selected_country = country(db, 'COL')
-    selected_country.total_cases.plot()
+    plot(selected_country, 'total_cases')
